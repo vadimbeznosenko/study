@@ -1,0 +1,49 @@
+pipeline {
+    environment {
+        imagename = "nodejs-demo-app:v$BUILD_NUMBER"
+        dockerImage = ''
+    }
+      agent any
+  
+  stages {
+      stage("clonig git") {
+      steps {
+        git([url: 'https://github.com/weblab-technology/nodejs-demo-app.git', branch: 'main'])
+      }
+    }
+    stage('Prune Docker data') {
+      steps {
+        sh "docker system prune -a --volumes -f"
+      }
+    }
+    stage("Build image") {
+        steps{
+      script {
+        dockerImage = docker.build imagename
+      }
+    }
+    }
+stage("rm Container") {
+      steps {
+           catchError{
+        sh "docker rm -f nodejs-demo-app"
+      }
+    }
+    	    }
+       stage('Docker run') {
+      steps {
+        sh "docker run -d -p 8080:8080 --name=nodejs-demo-app nodejs-demo-app:v$BUILD_NUMBER"
+      }
+    }
+          stage('Docker ps') {
+      steps {
+        sh "docker ps"
+      }
+    }
+  }
+    post { 
+        always { 
+            cleanWs()
+        }
+    }
+ }
