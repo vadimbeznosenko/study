@@ -1,0 +1,187 @@
+
+- name: Преконфиг серверов Kubernetes
+
+  hosts: kub_all
+  tasks:
+
+    - name: Уcтановка containerd и дополнительных компонентов
+
+      block:
+
+        - name: Добавляем universe
+          apt_repository:
+            repo: "deb http://us.archive.ubuntu.com/ubuntu/ {{ ansible_distribution_release }} universe"
+            state: present
+
+        - name: Установка дополнительных пакетов
+
+          apt:
+            name:
+              - apt-transport-https
+              - ca-certificates
+              - gnupg
+              - lsb-release
+              - software-properties-common
+              - wget
+              - libasound2
+              - curl
+              - git
+              - gnupg-agent
+            update-cache: yes
+            cache_valid_time: 86400
+
+        - name: Добавление ключа Containerd
+          apt_key:
+            url: https://download.docker.com/linux/ubuntu/gpg
+            state: present
+
+        - name: Установка стабильного репозитория Containerd
+          shell: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+        - name: Установка Containerd
+          apt:
+            name: 
+              - containerd.io
+            update-cache: yes
+
+        - name: Проверка что Containerd установлен и перезагружен
+          service:
+            name: containerd
+            state: restarted
+            enabled: yes
+
+        - name: Добавление ключа Kubernetes
+          apt_key:
+            url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+            state: present
+        
+        - name: Установка стабильного репозитория Kubernetes
+          ansible.builtin.apt_repository:
+            repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+            state: present
+
+        - name: Установка Kubernetes
+          apt:
+            name: 
+              - kubelet
+              - kubeadm
+              - kubectl
+            update-cache: yes
+        
+      become: yes
+
+    - name: Дополнительные настройки серверов
+
+      block:
+
+        - name: Отключение ufw
+          service:
+            name: ufw
+            state: stopped
+            enabled: false
+
+        - name: Удаление swap с fstab
+          lineinfile:
+            path: '/etc/fstab'
+            regexp: '\sswap\s'
+            state: 'absent'
+
+        - name: Добавление в hosts запись kubmaster kubworker1 kubworker2
+          ansible.builtin.lineinfile:
+            path: /etc/hosts
+            line: | 
+              192.168.31.10   kubmaster
+              192.168.31.11   kubworker1
+              192.168.31.12   kubworker2
+            create: yes
+
+        - name: Добавление параметров ядра для Kubernetes
+          ansible.builtin.lineinfile:
+            path: /etc/sysctl.d/kubernetes.conf
+            line: |
+              net.bridge.bridge-nf-call-ip6tables = 1
+              net.bridge.bridge-nf-call-iptables = 1
+              net.ipv4.ip_forward = 1
+            create: yes
+      
+        - name: Добавление модулей ядра для Containerd 
+          ansible.builtin.lineinfile:
+            path: /etc/modules-load.d/containerd.conf
+            line: |
+              overlay
+              br_netfilter
+            create: yes
+
+        - name: Настройка systemd в качестве cgroup
+          shell: containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
+        
+        - name: Настройка systemd в качестве cgroup
+          shell: sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+       
+        - name: Перезагрузка
+          reboot:
+      become: yes
+
+
+- name: Преконфиг кластера Kubernetes
+
+  hosts: kubmaster
+  become: yes
+  vars:
+    user: vagrant 
+  tasks:
+
+      - name: Инициализация Control-plane 
+        ansible.builtin.shell: kubeadm init --apiserver-advertise-address=192.168.31.10 --pod-network-cidr=172.16.0.0/16
+      
+
+      - name: Создаем деректорию .kube
+        file:
+             path: /home/{{ user }}/.kube/
+             state: directory
+             owner: "{{ user }}"
+             group: "{{ user }}"
+             mode: '0755'
+        
+
+      - name: Копируем admin.conf для доступа с обычного пользователя
+        copy:
+           src: /etc/kubernetes/admin.conf
+           dest: /home/{{ user }}/.kube/config
+           remote_src: yes
+           owner: "{{ user }}"
+           group: "{{ user }}"
+           mode: '0644'
+
+      - name: Сохранение токена Control-plane 
+        ansible.builtin.command: kubeadm token create --print-join-command
+        register: join_token
+
+      - name: Сохранение токенов Control-plane
+        set_fact:
+          token_worker: "{{ join_token.stdout_lines[0] }}"
+          cacheable: yes
+      
+      - name: Токен Control-plane
+        debug:
+          msg: "{{ token_worker }}"
+      
+      - name: Добаление worker1 в кластер
+        ansible.builtin.command: "{{ token_worker }}"
+        delegate_to: 192.168.31.11
+
+      - name: Добаление worker2 в кластер
+        ansible.builtin.command: "{{ token_worker }}"
+        delegate_to: 192.168.31.12
+
+
+      - name: Установка Calico
+        ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico.yaml
+
+        ignore_errors: yes
+        become_user: "{{ user }}"
+
+      
+        
+
+      

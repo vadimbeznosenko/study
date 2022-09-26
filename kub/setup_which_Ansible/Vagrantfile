@@ -1,0 +1,65 @@
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+# Use the same key for each machine
+  config.ssh.insert_key = false
+
+  config.vm.define "linux1" do |vm1|
+    vm1.vm.box = "bento/ubuntu-20.04"
+    vm1.vm.network "public_network", ip: "192.168.31.10", bridge: "wlo1"
+    vm1.vm.network "forwarded_port", guest: 22, host: 2201
+    vm1.vm.network "forwarded_port", guest: 80, host: 80
+    vm1.vm.network "forwarded_port", guest: 443, host: 443
+    vm1.vm.network "forwarded_port", guest: 8080, host: 8081
+    vm1.vm.network "forwarded_port", guest: 6443, host: 6445
+    vm1.vm.network "forwarded_port", guest: 2379, host: 2379
+    vm1.vm.network "forwarded_port", guest: 2380, host: 2380
+    vm1.vm.network "forwarded_port", guest: 10250, host: 10250
+    vm1.vm.network "forwarded_port", guest: 10259, host: 10259
+    vm1.vm.network "forwarded_port", guest: 10257, host: 10257
+    vm1.vm.hostname = "kubmaster"
+    vm1.vm.provider "virtualbox" do |vb|
+      vb.name = "kubmaster"
+      vb.customize ["modifyvm", :id, "--memory", "5000"]
+      vb.customize ["modifyvm", :id, "--cpus", "2"]
+  end
+end
+  config.vm.define "linux2" do |vm2|
+    vm2.vm.box = "bento/ubuntu-20.04"
+    vm2.vm.network "public_network", ip: "192.168.31.11", bridge: "wlo1"
+    vm2.vm.network "forwarded_port", guest: 22, host: 2202
+    vm2.vm.network "forwarded_port", guest: 8080, host: 8082
+    vm2.vm.network "forwarded_port", guest: 80, host: 81
+    vm2.vm.network "forwarded_port", guest: 443, host: 446
+    vm2.vm.network "forwarded_port", guest: 10250, host: 10251
+#    for i in 30000..32767
+#      vm2.vm.network :forwarded_port, guest: i, host: i
+    vm2.vm.hostname = "kubworker1"
+    vm2.vm.provider "virtualbox" do |vb|
+      vb.name = "kubworker1"
+      vb.customize ["modifyvm", :id, "--memory", "5000"]
+      vb.customize ["modifyvm", :id, "--cpus", "4"]
+  end
+end
+#end
+  config.vm.define "linux3" do |vm3|
+    vm3.vm.box = "bento/ubuntu-20.04"
+    vm3.vm.network "public_network", ip: "192.168.31.12", bridge: "wlo1"
+    vm3.vm.network "forwarded_port", guest: 22, host: 2203
+    vm3.vm.network "forwarded_port", guest: 80, host: 82
+    vm3.vm.network "forwarded_port", guest: 443, host: 445
+    vm3.vm.network "forwarded_port", guest: 8080, host: 8083
+    vm3.vm.network "forwarded_port", guest: 10250, host: 10252
+#    for i in 30000..32767	
+#      vm3.vm.network :forwarded_port, guest: i, host: i, auto_correct: true
+#      vm3.vm.usable_port_range = 32768..36000
+    vm3.vm.hostname = "kubworker2"
+    vm3.vm.provider "virtualbox" do |vb|
+      vb.name = "kubworker2"
+      vb.customize ["modifyvm", :id, "--memory", "5000"]
+      vb.customize ["modifyvm", :id, "--cpus", "4"]
+    vm3.vm.provision "ansible", playbook: "config.yml", inventory_path: "hosts.ini", limit: "all" 
+end
+end
+end
+#end
