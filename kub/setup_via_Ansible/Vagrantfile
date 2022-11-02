@@ -32,8 +32,8 @@ end
     vm2.vm.network "forwarded_port", guest: 80, host: 81
     vm2.vm.network "forwarded_port", guest: 443, host: 446
     vm2.vm.network "forwarded_port", guest: 10250, host: 10251
-#    for i in 30000..32767
-#      vm2.vm.network :forwarded_port, guest: i, host: i
+    # for i in 30000..32767
+    #   vm2.vm.network :forwarded_port, guest: i, host: i
     vm2.vm.hostname = "kubworker1"
     vm2.vm.provider "virtualbox" do |vb|
       vb.name = "kubworker1"
@@ -41,7 +41,7 @@ end
       vb.customize ["modifyvm", :id, "--cpus", "4"]
   end
 end
-#end
+# end
   config.vm.define "linux3" do |vm3|
     vm3.vm.box = "bento/ubuntu-20.04"
     vm3.vm.network "public_network", ip: "192.168.31.12", bridge: "wlo1"
@@ -50,9 +50,9 @@ end
     vm3.vm.network "forwarded_port", guest: 443, host: 445
     vm3.vm.network "forwarded_port", guest: 8080, host: 8083
     vm3.vm.network "forwarded_port", guest: 10250, host: 10252
-#    for i in 30000..32767	
-#      vm3.vm.network :forwarded_port, guest: i, host: i, auto_correct: true
-#      vm3.vm.usable_port_range = 32768..36000
+    # for i in 30000..32767	
+    #   vm3.vm.network :forwarded_port, guest: i, host: i, auto_correct: true
+    #   vm3.vm.usable_port_range = 32768..36000
     vm3.vm.hostname = "kubworker2"
     vm3.vm.provider "virtualbox" do |vb|
       vb.name = "kubworker2"
@@ -62,4 +62,4 @@ end
 end
 end
 end
-#end
+# end

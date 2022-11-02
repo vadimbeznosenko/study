@@ -27,6 +27,7 @@
               - curl
               - git
               - gnupg-agent
+              - bash-completion
             update-cache: yes
             cache_valid_time: 86400
 
@@ -36,7 +37,7 @@
             state: present
 
         - name: Установка стабильного репозитория Containerd
-          shell: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+          ansible.builtin.shell: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
         - name: Установка Containerd
           apt:
@@ -113,10 +114,10 @@
             create: yes
 
         - name: Настройка systemd в качестве cgroup
-          shell: containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
+          ansible.builtin.shell: containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
         
         - name: Настройка systemd в качестве cgroup
-          shell: sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+          ansible.builtin.shell: sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
        
         - name: Перезагрузка
           reboot:
@@ -134,18 +135,16 @@
       - name: Инициализация Control-plane 
         ansible.builtin.shell: kubeadm init --apiserver-advertise-address=192.168.31.10 --pod-network-cidr=172.16.0.0/16
       
-
       - name: Создаем деректорию .kube
-        file:
+        ansible.builtin.file:
              path: /home/{{ user }}/.kube/
              state: directory
              owner: "{{ user }}"
              group: "{{ user }}"
              mode: '0755'
         
-
       - name: Копируем admin.conf для доступа с обычного пользователя
-        copy:
+        ansible.builtin.copy:
            src: /etc/kubernetes/admin.conf
            dest: /home/{{ user }}/.kube/config
            remote_src: yes
@@ -174,12 +173,19 @@
         ansible.builtin.command: "{{ token_worker }}"
         delegate_to: 192.168.31.12
 
-
       - name: Установка Calico
         ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico.yaml
-
-        ignore_errors: yes
         become_user: "{{ user }}"
+
+      - name: Добавление запуск скрипта дополнения ввода в файл ~/.bashrc
+        ansible.builtin.shell: echo 'source <(kubectl completion bash)' >> ~/.bashrc
+        become_user: "{{ user }}"
+
+      - name: Добавление скрипт дополнения ввода в директорию /etc/bash_completion.d
+        ansible.builtin.shell: kubectl completion bash >/etc/bash_completion.d/kubectl
+
+
+    
 
       
         
