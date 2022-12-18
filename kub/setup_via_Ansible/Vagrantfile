@@ -22,6 +22,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.name = "kubmaster"
       vb.customize ["modifyvm", :id, "--memory", "5000"]
       vb.customize ["modifyvm", :id, "--cpus", "2"]
+      vb.customize ["storagectl", :id, "--name", "SATA", "--add", "sata" ]
+      vb.customize ["createhd", "--filename", "./sata1.vdi", "--variant", "Fixed", "--size", "1000"]
+      vb.customize ["storageattach", :id,  "--storagectl", "SATA", "--port", "1", "--device", "0", "--type", "hdd", "--medium", "./sata1.vdi"]
   end
 end
   config.vm.define "linux2" do |vm2|
