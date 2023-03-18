@@ -1,0 +1,34 @@
+        
+
+        - name: Установка репозитория Containerd
+          ansible.builtin.get_url:
+            url: https://download.docker.com/linux/centos/docker-ce.repo
+            dest: /etc/yum.repos.d/docker-ce.repo
+
+        - name: Установка репозитория Kubernetes
+          ansible.builtin.yum_repository:
+            name: Kubernetes
+            description: Kubernetes repo
+            file: kubernetes
+            baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+            gpgkey:
+            - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+            - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+            gpgcheck: yes
+            repo_gpgcheck: yes
+            enabled: yes
+
+        - name: Установка Containerd и компонентов Kubernetes
+          ansible.builtin.yum:
+            name:
+              - containerd.io
+              - kubelet
+              - kubeadm
+              - kubectl
+            state: latest
+
+        - name: Отключение firewalld
+          ansible.builtin.systemd:
+            name: firewalld
+            state: stopped
+            enabled: false

@@ -1,0 +1,14 @@
+galaxy_info:
+    role_name: amazon_linux_2_preconfig
+    description: Installing Kubernetes servers
+    author: Beznosenko Vadym
+    min_ansible_version: 2.12.5
+    license: MIT
+    platforms:
+    - name: Amazon Linux 2
+      versions:
+      - all
+dependencies:
+  - role: amazon_linux_2_packages
+
+

@@ -1,0 +1,11 @@
+        - name: Installing additional packages for nginx
+          ansible.builtin.command: amazon-linux-extras install nginx1.12=latest -y
+          args:
+            creates: /sbin/nginx
+        
+        - name: Installing additional packages git
+          ansible.builtin.yum:
+            name: git
+            state: present
+
+          

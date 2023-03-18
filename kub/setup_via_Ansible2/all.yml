@@ -1,0 +1,33 @@
+
+- name: Установка пакетов для серверов Kubernetes
+  become: yes
+  hosts: kub_all
+  roles:
+    - role: centos_packages
+      when: ansible_facts['distribution'] == "CentOS"
+    - role: ubuntu_packages
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - role: amazon_linux_2_packages
+      when: ansible_facts['distribution'] == "Amazon"
+
+- name: Преконфиг серверов Kubernetes
+  become: yes
+  hosts: kub_all
+  roles:
+    - role: preconfig
+      when: ansible_facts['distribution'] == "CentOS"
+    - role: preconfig
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - role: preconfig
+      when: ansible_facts['distribution'] == "Amazon"
+
+- name: Почти закончили щас самое главное
+  become: yes
+  hosts: kubmaster
+  roles:
+    - role: initialization
+      when: ansible_facts['distribution'] == "CentOS"
+    - role: initialization
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - role: initialization
+      when: ansible_facts['distribution'] == "Amazon"
