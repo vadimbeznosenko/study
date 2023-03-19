@@ -12,7 +12,7 @@
         - name: Копируем admin.conf для доступа с обычного пользователя
           ansible.builtin.copy:
            src: /etc/kubernetes/admin.conf
-           dest: /home/{{ user }}/.kube/config
+           dest: /home/{{ ansible_ssh_user }}/.kube/config
            remote_src: yes
            owner: "{{ ansible_ssh_user }}"
            group: "{{ ansible_ssh_user }}"
