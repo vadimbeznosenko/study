@@ -38,11 +38,11 @@
         
         - name: Установка Calico
           ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico.yaml
-          become_user: "{{ ansible_ssh_user }}"
-
-        - name: Добавление запуск скрипта дополнения ввода в файл ~/.bashrc
-          ansible.builtin.shell: echo 'source <(kubectl completion bash)' >> ~/.bashrc
-          become_user: "{{ ansible_ssh_user }}"
-
-        - name: Добавление скрипт дополнения ввода в директорию /etc/bash_completion.d
-          ansible.builtin.shell: kubectl completion bash >/etc/bash_completion.d/kubectl
+#          become_user: "{{ ansible_ssh_user }}"
+#
+#       - name: Добавление запуск скрипта дополнения ввода в файл ~/.bashrc
+#         ansible.builtin.shell: echo 'source <(kubectl completion bash)' >> ~/.bashrc
+#         become_user: "{{ ansible_ssh_user }}"
+#
+#        - name: Добавление скрипт дополнения ввода в директорию /etc/bash_completion.d
+#          ansible.builtin.shell: kubectl completion bash >/etc/bash_completion.d/kubectl
