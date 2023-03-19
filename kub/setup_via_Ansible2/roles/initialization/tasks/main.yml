@@ -3,7 +3,7 @@
       
         - name: Создаем деректорию .kube
           ansible.builtin.file:
-             path: /home/{{ user }}/.kube/
+             path: /home/{{ ansible_ssh_user }}/.kube/
              state: directory
              owner: {{ ansible_ssh_user }}
              group: {{ ansible_ssh_user }}
