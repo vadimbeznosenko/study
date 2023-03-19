@@ -8,7 +8,5 @@ galaxy_info:
     - name: Amazon Linux 2
       versions:
       - all
-dependencies:
-  - role: amazon_linux_2_packages
 
 
