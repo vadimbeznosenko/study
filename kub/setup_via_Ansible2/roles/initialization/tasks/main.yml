@@ -1,6 +1,6 @@
         - name: Определяем ansible user
           debug:
-            msg: "{{ ansible_ssh_user }}"
+            var: "{{ ansible_ssh_user }}"
           register: user
 
           
