@@ -1,3 +1,8 @@
+        - name: Определяем ansible user
+          debug:
+            msg: "{{ ansible_ssh_user }}"
+          register: user
+        
         - name: Инициализация Control-plane 
           ansible.builtin.shell: kubeadm init --apiserver-advertise-address=192.168.31.10 --pod-network-cidr=172.16.0.0/16
       
