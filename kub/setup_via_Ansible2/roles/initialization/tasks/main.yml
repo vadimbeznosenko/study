@@ -2,25 +2,29 @@
           debug:
             msg: "{{ ansible_ssh_user }}"
           register: user
-        
+        - name: Определяем ansible user
+          debug:
+            msg: "{{ user[1] }}"
+          register: user2
+          
         - name: Инициализация Control-plane 
           ansible.builtin.shell: kubeadm init --apiserver-advertise-address=192.168.31.10 --pod-network-cidr=172.16.0.0/16
       
         - name: Создаем деректорию .kube
           ansible.builtin.file:
-             path: /home/{{ user }}/.kube/
+             path: /home/{{ user[1] }}/.kube/
              state: directory
-             owner: "{{ user }}"
-             group: "{{ user }}"
+             owner: "{{ user[1] }}"
+             group: "{{ user[1] }}"
              mode: '0755'
         
         - name: Копируем admin.conf для доступа с обычного пользователя
           ansible.builtin.copy:
            src: /etc/kubernetes/admin.conf
-           dest: /home/{{ user }}/.kube/config
+           dest: /home/{{ user[1] }}/.kube/config
            remote_src: yes
-           owner: "{{ user }}"
-           group: "{{ user }}"
+           owner: "{{ user[1] }}"
+           group: "{{ user[1] }}"
            mode: '0644'
 
         - name: Сохранение токена Control-plane 
@@ -43,11 +47,11 @@
         
         - name: Установка Calico
           ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico.yaml
-          become_user: "{{ user }}"
+          become_user: "{{ user[1] }}"
 
         - name: Добавление запуск скрипта дополнения ввода в файл ~/.bashrc
           ansible.builtin.shell: echo 'source <(kubectl completion bash)' >> ~/.bashrc
-          become_user: "{{ user }}"
+          become_user: "{{ user[1] }}"
 
         - name: Добавление скрипт дополнения ввода в директорию /etc/bash_completion.d
           ansible.builtin.shell: kubectl completion bash >/etc/bash_completion.d/kubectl
