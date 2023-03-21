@@ -34,6 +34,7 @@
               - kubelet
               - kubeadm
               - kubectl
+              - bash-completion
             update-cache: yes
             cache_valid_time: 86400
             

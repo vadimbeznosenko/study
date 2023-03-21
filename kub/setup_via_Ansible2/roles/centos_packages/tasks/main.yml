@@ -25,6 +25,7 @@
               - kubelet
               - kubeadm
               - kubectl
+              - bash-completion
             state: latest
 
         - name: Отключение firewalld
