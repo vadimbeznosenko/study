@@ -38,8 +38,8 @@
       vm2.vm.network "forwarded_port", guest: 443, host: 443, auto_correct: true
       vm2.vm.network "forwarded_port", guest: 10250, host: 10250, auto_correct: true
       vm2.vm.synced_folder '.', '/vagrant', disabled: true
-      for i in 30000..32767
-      vm2.vm.network :forwarded_port, guest: i, host: i
+       for i in 30000..32767
+        vm2.vm.network :forwarded_port, guest: i, host: i
       vm2.vm.hostname = "kubmaster2"
       vm2.vm.provider "virtualbox" do |vb|
         vb.name = "kubmaster2"
@@ -56,16 +56,16 @@
       vm3.vm.network "forwarded_port", guest: 8080, host: 8080, auto_correct: true
       vm3.vm.network "forwarded_port", guest: 10250, host: 10250, auto_correct: true
       vm3.vm.synced_folder '.', '/vagrant', disabled: true
-      for i in 30000..32767	
-      vm3.vm.network :forwarded_port, guest: i, host: i, auto_correct: true
-      vm3.vm.usable_port_range = 32768..36000
+       for i in 30000..32767	
+        vm3.vm.network :forwarded_port, guest: i, host: i, auto_correct: true
+        vm3.vm.usable_port_range = 32768..56000
       vm3.vm.hostname = "kubmaster3"
       vm3.vm.provider "virtualbox" do |vb|
         vb.name = "kubmaster3"
         vb.customize ["modifyvm", :id, "--memory", "3000"]
         vb.customize ["modifyvm", :id, "--cpus", "2"]
   end
-  end
+end
   config.vm.define "linux4" do |vm4|
     vm4.vm.box = "centos/7"
     vm4.vm.network "public_network", ip: "192.168.31.13", bridge: "wlo1"
@@ -75,8 +75,9 @@
     vm4.vm.network "forwarded_port", guest: 443, host: 443, auto_correct: true
     vm4.vm.network "forwarded_port", guest: 10250, host: 10250, auto_correct: true
     vm4.vm.synced_folder '.', '/vagrant', disabled: true
-    for i in 30000..32767
-    vm4.vm.network :forwarded_port, guest: i, host: i
+     for i in 30000..32767
+      vm4.vm.network :forwarded_port, guest: i, host: i, auto_correct: true
+      vm4.vm.usable_port_range = 32768..56000
     vm4.vm.hostname = "kubworker1"
     vm4.vm.provider "virtualbox" do |vb|
       vb.name = "kubworker1"
@@ -93,14 +94,15 @@ config.vm.define "linux5" do |vm5|
   vm5.vm.network "forwarded_port", guest: 443, host: 443, auto_correct: true
   vm5.vm.network "forwarded_port", guest: 10250, host: 10250, auto_correct: true
   vm5.vm.synced_folder '.', '/vagrant', disabled: true
-  for i in 30000..32767
-  vm5.vm.network :forwarded_port, guest: i, host: i
+   for i in 30000..32767
+    vm5.vm.network :forwarded_port, guest: i, host: i, auto_correct: true
+    vm5.vm.usable_port_range = 32768..56000
   vm5.vm.hostname = "kubworker2"
   vm5.vm.provider "virtualbox" do |vb|
     vb.name = "kubworker2"
     vb.customize ["modifyvm", :id, "--memory", "2000"]
     vb.customize ["modifyvm", :id, "--cpus", "1"]
-end
+  end
 end
 config.vm.define "linux6" do |vm6|
   vm6.vm.box = "bento/ubuntu-20.04"
@@ -111,8 +113,9 @@ config.vm.define "linux6" do |vm6|
   vm6.vm.network "forwarded_port", guest: 443, host: 443, auto_correct: true
   vm6.vm.network "forwarded_port", guest: 10250, host: 10250, auto_correct: true
   vm6.vm.synced_folder '.', '/vagrant', disabled: true
-  for i in 30000..32767
-  vm6.vm.network :forwarded_port, guest: i, host: i
+   for i in 30000..32767
+    vm6.vm.network :forwarded_port, guest: i, host: i, auto_correct: true
+    vm6.vm.usable_port_range = 32768..56000
   vm6.vm.hostname = "kubworker3"
   vm6.vm.provider "virtualbox" do |vb|
     vb.name = "kubworker3"
@@ -121,4 +124,9 @@ config.vm.define "linux6" do |vm6|
   vm6.vm.provision "ansible", playbook: "all.yml", inventory_path: "./inventory/hosts.ini", limit: "all" 
 end
 end
-  end
+end
+end
+end
+end
+end
+end
