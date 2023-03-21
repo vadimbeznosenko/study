@@ -44,7 +44,7 @@
       vm2.vm.provider "virtualbox" do |vb|
         vb.name = "kubmaster2"
         vb.customize ["modifyvm", :id, "--memory", "2000"]
-        vb.customize ["modifyvm", :id, "--cpus", "2"]
+        vb.customize ["modifyvm", :id, "--cpus", "1"]
     end
   end
   #   config.vm.define "linux3" do |vm3|
