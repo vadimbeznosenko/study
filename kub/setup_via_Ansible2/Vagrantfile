@@ -38,8 +38,8 @@
       vm2.vm.network "forwarded_port", guest: 443, host: 443, auto_correct: true
       vm2.vm.network "forwarded_port", guest: 10250, host: 10250, auto_correct: true
       vm2.vm.synced_folder '.', '/vagrant', disabled: true
-       for i in 30000..32767
-        vm2.vm.network :forwarded_port, guest: i, host: i
+      #  for i in 30000..32767
+      #   vm2.vm.network :forwarded_port, guest: i, host: i
       vm2.vm.hostname = "kubmaster2"
       vm2.vm.provider "virtualbox" do |vb|
         vb.name = "kubmaster2"
@@ -94,9 +94,9 @@ config.vm.define "linux5" do |vm5|
   vm5.vm.network "forwarded_port", guest: 443, host: 443, auto_correct: true
   vm5.vm.network "forwarded_port", guest: 10250, host: 10250, auto_correct: true
   vm5.vm.synced_folder '.', '/vagrant', disabled: true
-   for i in 30000..32767
-    vm5.vm.network :forwarded_port, guest: i, host: i, auto_correct: true
-    vm5.vm.usable_port_range = 32768..56000
+  #  for i in 30000..32767
+  #   vm5.vm.network :forwarded_port, guest: i, host: i, auto_correct: true
+  #   vm5.vm.usable_port_range = 32768..56000
   vm5.vm.hostname = "kubworker2"
   vm5.vm.provider "virtualbox" do |vb|
     vb.name = "kubworker2"
@@ -125,8 +125,8 @@ config.vm.define "linux6" do |vm6|
 end
 end
 end
-# end
-# end
+#  end
+#  end
 # end
 # end
 # end
