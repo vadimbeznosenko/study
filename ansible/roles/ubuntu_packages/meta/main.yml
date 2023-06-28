@@ -1,0 +1,12 @@
+galaxy_info:
+    role_name: ubuntu_packages
+    description: Installing Kubernetes on Ubuntu servers
+    author: Beznosenko Vadym
+    min_ansible_version: 2.12.5
+    license: MIT
+    platforms:
+    - name: Ubuntu
+      versions:
+      - all
+
+    
