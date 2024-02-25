@@ -39,6 +39,6 @@
 # list_s.insert(index_min, list_max)
 # print(list_s)
 
-list_1 = [10, 4, 2, 6, 8, 1, 11, 12, 13, 13]
-list_1.reverse()
-print(list_1)
+# list_1 = [10, 4, 2, 6, 8, 1, 11, 12, 13, 13]
+# list_1.reverse()
+# print(list_1)
