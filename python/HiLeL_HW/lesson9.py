@@ -5,9 +5,21 @@
 #     "model": "civic",
 #     "color": "red"
 # }
-# student.pop("id")
+# student_list = list(student)
+# index_first = student_list.pop(0)
+# index_last = student_list.pop()
+# insert_last = student_list.append(index_first)
+# insert_first = student_list.insert(0, index_last)
+# student_list_val = list(student.values())
+# index_first_val = student_list_val.pop(0)
+# index_last_val = student_list_val.pop()
+# insert_last_val = student_list_val.append(index_first_val)
+# insert_first_val = student_list_val.insert(0, index_last_val)
+# dict_rev = zip(student_list, student_list_val)
+# print(dict(dict_rev))
+# student.pop(2)
 # student["new_key"] = "new_value"
-# print(student)
+
 
 # student = {"name": "Emma", "class": 9, "marks": 75}
 # print(student["marks"])
