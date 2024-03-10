@@ -1,3 +1,2 @@
-list_ = ["bar", "baz", "qux", "etc"]
-# tuple_ = tuple(list_)
-# print(tuple_)
+# for _, elem in dict_data:
+#      print (_, elem)
